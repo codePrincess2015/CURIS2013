@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+				Circles of Fourtune
+		</title>
+		<script src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"> </script>
+		<link rel="stylesheet" type="text/css" href="ConnectFour.css">
+		<script type ="text/javascript">
+		var gameBoard;
+		var currentPlayer;
+		var player1;
+		var player2;
+		var playerOneScore = 0;
+		var playerTwoScore = 0;
+		var ctx;
+		var hasSetColor = 0;
+
+		function initBoard(){
+		 gameBoard = new Array(6);
+		 for(var i = 0;i < gameBoard.length;i++){
+		 	gameBoard[i] = new Array(7);
+		 	for(var j = 0; j < gameBoard[i].length; j++){
+		 		gameBoard[i][j]= 0;
+		 	}
+		 }
+		 var c = document.getElementById("board");
+		 if(c.getContext){
+		 	ctx = c.getContext("2d");
+		 }
+		 var img = document.getElementById("space");
+		 var pat = ctx.createPattern(img,"repeat");
+		 ctx.rect(0,0,350,300);
+		 ctx.fillStyle = pat;
+		 ctx.fill();
+		}
+		function setColor(color){
+			document.getElementById("RED").disabled = true;
+			document.getElementById("BLACK").disabled = true;
+			player1 = color;
+			if (player1 === "RED"){
+				player2 = "BLACK";
+				currentPlayer = "RED";
+			}
+			else { 
+				player2 = "RED";
+				currentPlayer = "BLACK";
+
+			}
+			hasSetColor = 1;
+		
+		}
+		function addCoin(event){
+			if (hasSetColor === 1){
+			var canvasWidth = document.getElementById("board").width;
+			var x = event.clientX - (window.innerWidth - canvasWidth)/2;
+			var columnNum = Math.floor(x/50);
+			var rowNum = -1;
+			var radius = 20;
+			for(var i = 5; i > -1; i--){
+				if (gameBoard[i][columnNum] != 1 && gameBoard[i][columnNum] != 2 ){
+					rowNum = i;
+					break;
+				}
+			}
+			
+			if (rowNum != -1){
+				document.getElementById("coinDrop").play();
+				var spaceX = 50*columnNum + 25;
+				var spaceY = 50*rowNum + 25;
+				var c = document.getElementById("board");
+				var ctx = c.getContext("2d");
+				var y = 25;
+				ctx.beginPath();
+				ctx.arc(spaceX,y,radius,0,2*Math.PI);
+				var img = document.getElementById("space");
+				function move(){
+					console.log(y);
+			 		ctx.drawImage(img,spaceX-25,y-25,50,50);
+					y = y + 50;
+					ctx.beginPath();
+					ctx.arc(spaceX,y,radius,0,2*Math.PI);
+					ctx.fill();
+					setTimeout(function(){if(y < spaceY) move();},50);
+			 	}
+				if (currentPlayer === "RED"){
+					ctx.fillStyle = "red";
+					currentPlayer = "BLACK";
+					gameBoard[rowNum][columnNum] = 1;
+					ctx.fill();
+					if (rowNum != 0) move();
+					checkWinner(1);
+				}
+				else{
+					ctx.fillStyle = "black";
+					currentPlayer = "RED";
+					gameBoard[rowNum][columnNum] = 2; 
+					ctx.fill();
+					if (rowNum != 0)move();
+					checkWinner(2);
+				}
+				
+
+			}
+		}
+	}
+		 
+
+		function checkWinner(player){
+			for (var i = 0; i < 6; i++){
+				for (var j = 0; j < 7; j++){
+					if (gameBoard[i][j] === player){
+						if (checkUpperDiagonal(i,j,player) || checkLowerDiagonal(i,j,player)||checkHorizontal(i,j,player) || checkVertical(i,j,player,1)) {
+							setTimeout(function(){declareWinner(player)},300);
+						}
+					}
+				}
+			}
+		}
+
+		function declareWinner(player){
+			document.getElementById("gameOver").play();
+			if (player === 1){
+				if (player1 === "RED"){
+						playerOneScore++;
+						alert("Player 1 wins!");
+					}
+					else {
+						playerTwoScore++;
+						alert("Player 2 wins!");
+					}
+			}
+			else{
+				if (player1 === "BLACK"){
+						playerOneScore++;
+						alert("Player 1 wins!");
+					}
+					else {
+						playerTwoScore++;
+						alert("Player 2 wins!");
+					}
+			}
+			$("#playerOneScore").text("Player One's wins: " + playerOneScore);
+			$("#playerTwoScore").text("Player Two's wins: " + playerTwoScore);
+			document.getElementById("RED").disabled = false;
+			document.getElementById("BLACK").disabled = false;
+			hasSetColor = 0;
+			initBoard();
+		}
+
+		function checkUpperDiagonal(i,j,player){
+			for (var k = 0; k < 3; k++){
+				if ((i-1) < 0 || (j+1) >= 7 || gameBoard[i-1][j+1] != player) {
+					return false;
+				}
+				i--;
+				j++;
+			}
+			return true; 
+		}
+
+		function checkLowerDiagonal(i,j,player){
+			for (var k = 0; k < 3; k++){
+				if ((i+1) >= 6 || (j+1) >= 7 || gameBoard[i+1][j+1] != player) {
+					return false;
+				}
+				i++;
+				j++;
+			}
+			return true; 
+		}
+
+		function checkHorizontal(i,j,player,count){
+			for (var k = 0; k < 3; k++){
+				if ((j+1) >= 7 || gameBoard[i][j+1] != player) {
+					return false;
+				}
+				j++;
+			}
+			return true; 
+		}
+
+		function checkVertical(i,j,player,count){
+			for (var k = 0; k < 3; k++){
+				if ((i+1) >= 6 || gameBoard[i+1][j] != player) {
+					return false;
+				}
+				i++;
+			}
+			return true; 
+		}
+
+		</script>
+	</head>
+	<body onload="initBoard()">
+		<h1> Play Circles of Fourtune!<img src="http://www.penguin.com.au/mrmen/images/home-char-bg.gif" width="100" height="50"></h1>
+			<p> Make a vertical, horizontal, or diagonal line of 4 with your color of choice to win!</p>
+		<center><canvas id="board" height="300" width ="350" onclick="addCoin(event)"></center>
+		</canvas>
+		<img id="space" src="connectfour.jpg" style="visibility:hidden">
+		<audio id="coinDrop">
+			<source src="coin-drop-1.wav" type="audio/wav">
+		</audio>
+		<audio id="gameOver">
+			<source src="gameover.wav" type="audio/wav">
+		</audio>
+		<h2> <strong> Player 1 Color Options </strong> </h2>
+		<button id="RED" onclick="setColor(this.id)">Red</button>
+		<button id ="BLACK" onclick="setColor(this.id)">Black</button>
+		<h2> Score </h2>
+			<div id="playerOneScore">
+				Player One's wins: 0
+			</div>
+			<div id="playerTwoScore">
+				Player Two's wins: 0
+				<br><br>
+			</div>
+		<a href="ConnectFour.zip"> <button> Download source code for this game here! </button></a>
+	</body>
+
+</html>
