@@ -193,6 +193,14 @@
 		</script>
 	</head>
 	<body onload="initBoard()">
+		<div id="fb-root"></div>
+		<script>(function(d, s, id) {
+  			var js, fjs = d.getElementsByTagName(s)[0];
+  			if (d.getElementById(id)) return;
+  			js = d.createElement(s); js.id = id;
+  			js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+  			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));</script>
 		<h1> Play Circles of Fourtune!<img src="http://www.penguin.com.au/mrmen/images/home-char-bg.gif" width="100" height="50"></h1>
 			<p> Make a vertical, horizontal, or diagonal line of 4 with your color of choice to win!</p>
 		<center><canvas id="board" height="300" width ="350" onclick="addCoin(event)"></center>
@@ -215,7 +223,9 @@
 				Player Two's wins: 0
 				<br><br>
 			</div>
-		<a href="ConnectFour.zip"> <button> Download source code for this game here! </button></a>
+		<a href="circlesOfFortune.zip"> <button> Download source code for this game here! </button></a>
+		<br><br>
+		<div class="fb-like" data-href="http://web.stanford.edu/~hramesh/" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
 	</body>
 
 </html>
